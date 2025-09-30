@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Football Analysis</h1>
+            <p class="text-gray-600">Access your analysis dashboard</p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-xl shadow-sm p-1 flex mb-6">
+            <button id="signin-tab" class="flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all bg-black text-white" onclick="switchTab('signin')">
+                Sign In
+            </button>
+            <button id="signup-tab" class="flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all text-gray-500 hover:text-gray-700" onclick="switchTab('signup')">
+                Sign Up
+            </button>
+        </div>
+
+        <!-- Sign In Form -->
+        <div id="signin-form" class="bg-white rounded-xl shadow-sm p-8">
+            <form method="POST" action="/signin" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 mb-2">Email</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                            </svg>
+                        </div>
+                        <input name="email" type="email" required class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent" placeholder="Enter your email">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 mb-2">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <input name="password" type="password" required class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent" placeholder="Enter your password">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+                    Sign In
+                </button>
+            </form>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div id="signup-form" class="bg-white rounded-xl shadow-sm p-8 hidden">
+            <form method="POST" action="/signup" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 mb-2">Email</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                            </svg>
+                        </div>
+                        <input name="email" type="email" required class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent" placeholder="Enter your email">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 mb-2">Name</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                            </svg>
+                        </div>
+                        <input name="name" type="text" required class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent" placeholder="Enter your email">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 mb-2">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <input name="password" type="password" required minlength="6" class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent" placeholder="Enter your password">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+                    Sign Up
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    function switchTab(tab) {
+        const signinTab = document.getElementById('signin-tab');
+        const signupTab = document.getElementById('signup-tab');
+        const signinForm = document.getElementById('signin-form');
+        const signupForm = document.getElementById('signup-form');
+        
+        if (tab === 'signin') {
+            signinTab.classList.add('bg-black', 'text-white');
+            signinTab.classList.remove('text-gray-500', 'hover:text-gray-700');
+            signupTab.classList.remove('bg-black', 'text-white');
+            signupTab.classList.add('text-gray-500', 'hover:text-gray-700');
+            
+            signinForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+        } else {
+            signupTab.classList.add('bg-black', 'text-white');
+            signupTab.classList.remove('text-gray-500', 'hover:text-gray-700');
+            signinTab.classList.remove('bg-black', 'text-white');
+            signinTab.classList.add('text-gray-500', 'hover:text-gray-700');
+            
+            signupForm.classList.remove('hidden');
+            signinForm.classList.add('hidden');
+        }
+    }
+    </script>
+</body>
+</html>
