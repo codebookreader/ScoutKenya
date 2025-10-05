@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Google Authenticator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4 bg-white rounded-xl shadow-sm p-8">
+    <h2 class="text-2xl font-bold mb-4 text-center">Set up Google Authenticator</h2>
+    <p class="mb-4 text-center">Scan the QR code below with your Google Authenticator app, then enter the 6-digit code to complete registration.</p>
+    {% if error %}
+    <div class="mb-4 text-center text-red-600">{{ error }}</div>
+    {% endif %}
+        <div class="flex justify-center mb-6">
+            <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code" class="w-40 h-40">
+        </div>
+        <form method="POST" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-900 mb-2">Authenticator Code</label>
+                <input name="token" type="text" maxlength="6" required class="block w-full pl-3 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent" placeholder="Enter 6-digit code">
+            </div>
+            <button type="submit" class="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors">Verify</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Set Up 2FA - Football Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex flex-col items-center justify-center min-h-screen">
+  <div class="bg-white shadow-lg rounded-xl p-8 text-center">
+    <h2 class="text-2xl font-bold mb-4">Set Up Two-Factor Authentication</h2>
+    <p class="text-gray-600 mb-4">
+      Scan this QR code with your Google Authenticator app to link your account.
+    </p>
+    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="mx-auto w-56 h-56 border rounded-lg shadow">
+    <p class="text-gray-600 mt-6">
+      Once added, you can use the 6-digit code to log in.
+    </p>
+    <a href="/" class="block mt-6 text-blue-600 hover:underline">Go to Login</a>
+  </div>
+</body>
+</html>
