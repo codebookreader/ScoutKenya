@@ -1,2 +1,6 @@
-*__pycahce__*
+*__pycache__*
 *.pyc
+*.venv*
+*.mp4
+*.avi
+*.pt

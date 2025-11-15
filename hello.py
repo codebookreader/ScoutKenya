@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from supabase import create_client
 # Import ALL required components from flask here
-from flask import Flask, render_template, jsonify 
+from flask import Flask, render_template, jsonify, request, redirect
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -39,6 +39,23 @@ def test_insert():
 def home():
     # Make sure you have a 'login.html' file in a 'templates' folder
     return render_template('login.html')
+
+
+@app.route("/signin", methods=["POST"])
+def signin():
+    email = request.form.get("email")
+    password = request.form.get("password")
+    role = request.form.get("role")
+    # Add your authentication logic here
+    if role == "coach":
+        return redirect("/coach-dashboard")
+    # For now, just return a simple response for other roles
+    return f"Signed in as {email} with role {role}"
+
+# Route for coach dashboard
+@app.route("/coach-dashboard")
+def coach_dashboard():
+    return render_template("coach_dashboard.html")
 
 # A route to fetch and display data from a Supabase table
 @app.route("/users")
