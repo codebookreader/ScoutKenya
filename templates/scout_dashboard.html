@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scout Platform - Player Discovery & Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+            color: #1a1a1a;
+        }
+
+        /* Header */
+        header {
+            background: #000000;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: #1a1a1a;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            border: 2px solid #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Background Pattern */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, currentColor 1px, transparent 1px),
+                radial-gradient(circle at 60% 70%, currentColor 1px, transparent 1px),
+                radial-gradient(circle at 80% 20%, currentColor 1px, transparent 1px),
+                radial-gradient(circle at 40% 90%, currentColor 1px, transparent 1px);
+            background-size: 200px 200px;
+            background-repeat: repeat;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Search & Filter Section */
+        .search-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid #000000;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #000000;
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .search-input, .search-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus, .search-select:focus {
+            outline: none;
+            border-color: #000000;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-btn {
+            grid-column: 1 / -1;
+            padding: 0.75rem 2rem;
+            background: #000000;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .search-btn:hover {
+            background: #ffffff;
+            color: #000000;
+            border: 2px solid #000000;
+        }
+
+        /* Players Grid */
+        .players-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #000000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .player-card {
+            background: white;
+            border: 2px solid #000000;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .player-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            border-color: #333;
+        }
+
+        .player-header {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+            padding: 1.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .player-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 3px solid white;
+        }
+
+        .player-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .player-position {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .rating-badge {
+            background: white;
+            color: #000000;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .player-body {
+            padding: 1.5rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #000000;
+        }
+
+        .player-footer {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border: 2px solid #000000;
+            background: white;
+            color: #000000;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .btn-small:hover {
+            background: #000000;
+            color: white;
+        }
+
+        .btn-small.primary {
+            background: #000000;
+            color: white;
+        }
+
+        .btn-small.primary:hover {
+            background: white;
+            color: #000000;
+        }
+
+        /* Watchlist Section */
+        .watchlist-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid #000000;
+            margin-bottom: 2rem;
+        }
+
+        .watchlist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .watchlist-item:last-child {
+            border-bottom: none;
+        }
+
+        .watchlist-player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .watchlist-player-name {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .watchlist-player-meta {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .remove-btn {
+            padding: 0.4rem 0.8rem;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #cc0000;
+        }
+
+        /* Comparison Section */
+        .comparison-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid #000000;
+            margin-bottom: 2rem;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .comparison-player {
+            padding: 1.5rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .comparison-player h4 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-label {
+            font-size: 0.8rem;
+            min-width: 80px;
+            color: #666;
+        }
+
+        .progress-fill {
+            flex: 1;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-value {
+            height: 100%;
+            background: linear-gradient(90deg, #000000, #333333);
+            border-radius: 3px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .tab-btn.active {
+            color: #000000;
+            border-bottom-color: #000000;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .players-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-left {
+                gap: 0.5rem;
+            }
+
+            .logo {
+                font-size: 1.1rem;
+                letter-spacing: 1px;
+            }
+
+            .search-section {
+                padding: 1.5rem;
+            }
+
+            .player-card {
+                border-radius: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-left">
+            <div class="logo">⚽ Scout</div>
+        </div>
+        <div class="header-right">
+            <div class="user-profile">
+                <div class="user-avatar">S</div>
+                <span>Scout</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('discover')">Discover Players</button>
+            <button class="tab-btn" onclick="switchTab('watchlist')">My Watchlist</button>
+            <button class="tab-btn" onclick="switchTab('compare')">Compare Players</button>
+        </div>
+
+        <!-- Discover Tab -->
+        <div id="discover" class="tab-content active">
+            <!-- Search & Filter -->
+            <div class="search-section">
+                <h2 class="search-title">Find Your Next Star Player</h2>
+                <div class="search-grid">
+                    <input type="text" class="search-input" placeholder="Player Name" id="searchName">
+                    <select class="search-select" id="positionFilter">
+                        <option value="">All Positions</option>
+                        <option value="Striker">Striker</option>
+                        <option value="Midfielder">Midfielder</option>
+                        <option value="Defender">Defender</option>
+                        <option value="Goalkeeper">Goalkeeper</option>
+                    </select>
+                    <select class="search-select" id="ratingFilter">
+                        <option value="">All Ratings</option>
+                        <option value="9">9.0+</option>
+                        <option value="8">8.0+</option>
+                        <option value="7">7.0+</option>
+                    </select>
+                    <input type="text" class="search-input" placeholder="Team" id="teamFilter">
+                    <button class="search-btn" onclick="filterPlayers()">Search Players</button>
+                </div>
+            </div>
+
+            <!-- Players Grid -->
+            <div class="players-section">
+                <h2 class="section-title">Top Players</h2>
+                <div class="players-grid" id="playersGrid">
+                    <!-- Players will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Watchlist Tab -->
+        <div id="watchlist" class="tab-content">
+            <div class="watchlist-section">
+                <h2 class="search-title">My Watchlist</h2>
+                <div id="watchlistContainer">
+                    <p style="color: #666; padding: 2rem; text-align: center;">Add players to your watchlist to track them</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compare Tab -->
+        <div id="compare" class="tab-content">
+            <div class="comparison-section">
+                <h2 class="search-title">Compare Players</h2>
+                <div class="comparison-grid" id="comparisonGrid">
+                    <p style="grid-column: 1/-1; color: #666; text-align: center; padding: 2rem;">Add up to 3 players to compare their stats</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample players data
+        const allPlayers = [
+            { id: 1, name: 'Jamal Sterling', position: 'Striker', team: 'Manchester United', rating: 9.2, age: 23, goals: 18, assists: 6, pace: 94, shooting: 91, passing: 82 },
+            { id: 2, name: 'Lucas Silva', position: 'Midfielder', team: 'Bayern Munich', rating: 8.8, age: 25, goals: 8, assists: 14, pace: 87, shooting: 85, passing: 93 },
+            { id: 3, name: 'Marcus Johnson', position: 'Defender', team: 'Liverpool', rating: 8.5, age: 24, goals: 2, assists: 3, pace: 88, shooting: 72, passing: 88 },
+            { id: 4, name: 'Andre Costa', position: 'Striker', team: 'Real Madrid', rating: 9.1, age: 27, goals: 22, assists: 8, pace: 92, shooting: 94, passing: 80 },
+            { id: 5, name: 'David Kim', position: 'Goalkeeper', team: 'Chelsea', rating: 8.3, age: 22, goals: 0, assists: 0, pace: 65, shooting: 40, passing: 75 },
+            { id: 6, name: 'Paolo Rossi', position: 'Midfielder', team: 'AC Milan', rating: 8.6, age: 26, goals: 5, assists: 11, pace: 84, shooting: 82, passing: 91 },
+            { id: 7, name: 'Thomas Weber', position: 'Defender', team: 'Borussia Dortmund', rating: 8.4, age: 23, goals: 1, assists: 2, pace: 90, shooting: 68, passing: 85 },
+            { id: 8, name: 'Yuki Tanaka', position: 'Striker', team: 'PSG', rating: 8.9, age: 24, goals: 20, assists: 5, pace: 93, shooting: 92, passing: 79 }
+        ];
+
+        let watchlist = [];
+        let comparisonList = [];
+
+        // Initialize
+        function init() {
+            renderPlayers(allPlayers);
+        }
+
+        // Render players
+        function renderPlayers(players) {
+            const grid = document.getElementById('playersGrid');
+            grid.innerHTML = players.map(player => `
+                <div class="player-card">
+                    <div class="player-header">
+                        <div>
+                            <div class="player-avatar">${player.name.charAt(0)}</div>
+                        </div>
+                        <div style="flex: 1; margin-left: 1rem;">
+                            <h3 class="player-info" style="color: white; margin-bottom: 0.25rem;">${player.name}</h3>
+                            <p class="player-position">${player.position} • ${player.team}</p>
+                        </div>
+                        <div class="rating-badge">${player.rating}</div>
+                    </div>
+                    <div class="player-body">
+                        <div class="stat-row">
+                            <span class="stat-label">Age</span>
+                            <span class="stat-value">${player.age}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Goals</span>
+                            <span class="stat-value">${player.goals}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Assists</span>
+                            <span class="stat-value">${player.assists}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Pace</span>
+                            <span class="stat-value">${player.pace}</span>
+                        </div>
+                    </div>
+                    <div class="player-footer">
+                        <button class="btn-small" onclick="addToWatchlist(${player.id})">⭐ Watchlist</button>
+                        <button class="btn-small primary" onclick="addToComparison(${player.id})">Compare</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter players
+        function filterPlayers() {
+            const name = document.getElementById('searchName').value.toLowerCase();
+            const position = document.getElementById('positionFilter').value;
+            const rating = parseFloat(document.getElementById('ratingFilter').value) || 0;
+            const team = document.getElementById('teamFilter').value.toLowerCase();
+
+            const filtered = allPlayers.filter(p =>
+                (!name || p.name.toLowerCase().includes(name)) &&
+                (!position || p.position === position) &&
+                (!rating || p.rating >= rating) &&
+                (!team || p.team.toLowerCase().includes(team))
+            );
+
+            renderPlayers(filtered.length > 0 ? filtered : allPlayers);
+        }
+
+        // Watchlist functions
+        function addToWatchlist(playerId) {
+            const player = allPlayers.find(p => p.id === playerId);
+            if (!watchlist.find(p => p.id === playerId)) {
+                watchlist.push(player);
+                updateWatchlist();
+            }
+        }
+
+        function updateWatchlist() {
+            const container = document.getElementById('watchlistContainer');
+            if (watchlist.length === 0) {
+                container.innerHTML = '<p style="color: #666; padding: 2rem; text-align: center;">Add players to your watchlist to track them</p>';
+                return;
+            }
+            container.innerHTML = watchlist.map(p => `
+                <div class="watchlist-item">
+                    <div class="watchlist-player-info">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${p.name.charAt(0)}</div>
+                        <div>
+                            <div class="watchlist-player-name">${p.name}</div>
+                            <div class="watchlist-player-meta">${p.position} • ${p.team} • Rating: ${p.rating}</div>
+                        </div>
+                    </div>
+                    <button class="remove-btn" onclick="removeFromWatchlist(${p.id})">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeFromWatchlist(playerId) {
+            watchlist = watchlist.filter(p => p.id !== playerId);
+            updateWatchlist();
+        }
+
+        // Comparison functions
+        function addToComparison(playerId) {
+            if (comparisonList.length >= 3) {
+                alert('You can compare up to 3 players');
+                return;
+            }
+            const player = allPlayers.find(p => p.id === playerId);
+            if (!comparisonList.find(p => p.id === playerId)) {
+                comparisonList.push(player);
+                updateComparison();
+            }
+        }
+
+        function updateComparison() {
+            const grid = document.getElementById('comparisonGrid');
+            if (comparisonList.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; color: #666; text-align: center; padding: 2rem;">Add up to 3 players to compare their stats</p>';
+                return;
+            }
+            grid.innerHTML = comparisonList.map(p => `
+                <div class="comparison-player">
+                    <h4>${p.name}</h4>
+                    <div style="margin-bottom: 0.5rem; color: #666; font-size: 0.85rem;">${p.position} • ${p.team}</div>
+                    <div class="progress-bar">
+                        <span class="progress-label">Rating</span>
+                        <div class="progress-fill"><div class="progress-value" style="width: ${(p.rating/10)*100}%"></div></div>
+                        <span style="font-weight: 700; min-width: 40px;">${p.rating}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <span class="progress-label">Pace</span>
+                        <div class="progress-fill"><div class="progress-value" style="width: ${p.pace}%"></div></div>
+                        <span style="font-weight: 700; min-width: 40px;">${p.pace}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <span class="progress-label">Shooting</span>
+                        <div class="progress-fill"><div class="progress-value" style="width: ${p.shooting}%"></div></div>
+                        <span style="font-weight: 700; min-width: 40px;">${p.shooting}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <span class="progress-label">Passing</span>
+                        <div class="progress-fill"><div class="progress-value" style="width: ${p.passing}%"></div></div>
+                        <span style="font-weight: 700; min-width: 40px;">${p.passing}</span>
+                    </div>
+                    <button class="remove-btn" onclick="removeFromComparison(${p.id})" style="width: 100%; margin-top: 1rem;">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeFromComparison(playerId) {
+            comparisonList = comparisonList.filter(p => p.id !== playerId);
+            updateComparison();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
