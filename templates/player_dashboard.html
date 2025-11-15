@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center">
+    <div class="max-w-2xl w-full mx-4 mt-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">Player Platform</h1>
+        <!-- Player Info Section -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Player Information</h2>
+            <div class="space-y-2">
+                <div class="flex items-center space-x-2">
+                    <span class="bg-gray-200 px-2 py-1 rounded">Player ID:</span>
+                    <span id="player-id" class="font-semibold">12345</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="bg-gray-200 px-2 py-1 rounded">Games Played:</span>
+                    <span id="games-played" class="font-semibold">12</span>
+                </div>
+            </div>
+        </div>
+        <!-- Coach Feedback Section -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-xl font-semibold mb-4">Coach Feedback</h2>
+            <div id="feedback-list" class="space-y-4">
+                <!-- Example feedback, replace with dynamic content -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="font-medium mb-2">Coach John Doe</div>
+                    <div class="text-gray-700">Great performance in last match. Keep improving your speed!</div>
+                    <div class="text-xs text-gray-400 mt-2">2025-11-01</div>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="font-medium mb-2">Coach Jane Smith</div>
+                    <div class="text-gray-700">Work on your passing accuracy. Good effort overall.</div>
+                    <div class="text-xs text-gray-400 mt-2">2025-10-25</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
