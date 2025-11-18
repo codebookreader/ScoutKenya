@@ -3,4 +3,7 @@
 *.venv*
 *.mp4
 *.avi
-*.pt
+*.jpg
+*.png
+*.jpeg
+*.txt
