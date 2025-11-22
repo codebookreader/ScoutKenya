@@ -104,39 +104,39 @@ class Tracker:
         return tracks
     
     def draw_ellipse(self,frame,bbox,color,track_id=None):
-        y2 = int(bbox[3])
-        x_center, _ = get_center_of_bbox(bbox)
+        x_center, y_center = get_center_of_bbox(bbox)
         width = get_bbox_width(bbox)
-
+        axes = (max(2, int(width // 2)), max(2, int(width // 4)))
         cv2.ellipse(
             frame,
-            center=(x_center,y2),
-            axes=(int(width), int(0.35*width)),
+            center=(x_center, y_center),
+            axes=axes,
             angle=0.0,
-            startAngle=-45,
-            endAngle=235,
-            color = color,
+            startAngle=0,
+            endAngle=360,
+            color=color,
             thickness=2,
             lineType=cv2.LINE_4
         )
 
+        # Draw rectangle and text at the center for debug, using y_center
         rectangle_width = 40
-        rectangle_height=20
-        x1_rect = x_center - rectangle_width//2
-        x2_rect = x_center + rectangle_width//2
-        y1_rect = (y2- rectangle_height//2) +15
-        y2_rect = (y2+ rectangle_height//2) +15
+        rectangle_height = 20
+        x1_rect = x_center - rectangle_width // 2
+        x2_rect = x_center + rectangle_width // 2
+        y1_rect = y_center - rectangle_height // 2 + 15
+        y2_rect = y_center + rectangle_height // 2 + 15
 
         if track_id is not None:
             cv2.rectangle(frame,
-                          (int(x1_rect),int(y1_rect) ),
-                          (int(x2_rect),int(y2_rect)),
+                          (int(x1_rect), int(y1_rect)),
+                          (int(x2_rect), int(y2_rect)),
                           color,
                           cv2.FILLED)
-            
-            x1_text = x1_rect+12
+
+            x1_text = x1_rect + 12
             if track_id > 99:
-                x1_text -=10
+                x1_text -= 10
             
             cv2.putText(
                 frame,

@@ -5,37 +5,38 @@ class TeamAssigner:
         self.team_colors = {}
         self.player_team_dict = {}
     
-    def get_clustering_model(self,image):
+    def get_clustering_model(self, image):
         # Reshape the image to 2D array
-        image_2d = image.reshape(-1,3)
-
-        # Preform K-means with 2 clusters
-        kmeans = KMeans(n_clusters=2, init="k-means++",n_init=1)
+        image_2d = image.reshape(-1, 3)
+        if image_2d.shape[0] == 0:
+            # Return None if empty
+            return None
+        # Perform K-means with 2 clusters
+        kmeans = KMeans(n_clusters=2, init="k-means++", n_init=1)
         kmeans.fit(image_2d)
-
         return kmeans
 
-    def get_player_color(self,frame,bbox):
-        image = frame[int(bbox[1]):int(bbox[3]),int(bbox[0]):int(bbox[2])]
-
-        top_half_image = image[0:int(image.shape[0]/2),:]
-
+    def get_player_color(self, frame, bbox):
+        image = frame[int(bbox[1]):int(bbox[3]), int(bbox[0]):int(bbox[2])]
+        if image.size == 0:
+            # Return a default color if region is empty
+            return [0, 0, 0]
+        top_half_image = image[0:int(image.shape[0]/2), :]
+        if top_half_image.size == 0:
+            return [0, 0, 0]
         # Get Clustering model
         kmeans = self.get_clustering_model(top_half_image)
-
-        # Get the cluster labels forr each pixel
+        if kmeans is None:
+            return [0, 0, 0]
+        # Get the cluster labels for each pixel
         labels = kmeans.labels_
-
         # Reshape the labels to the image shape
-        clustered_image = labels.reshape(top_half_image.shape[0],top_half_image.shape[1])
-
+        clustered_image = labels.reshape(top_half_image.shape[0], top_half_image.shape[1])
         # Get the player cluster
-        corner_clusters = [clustered_image[0,0],clustered_image[0,-1],clustered_image[-1,0],clustered_image[-1,-1]]
-        non_player_cluster = max(set(corner_clusters),key=corner_clusters.count)
+        corner_clusters = [clustered_image[0, 0], clustered_image[0, -1], clustered_image[-1, 0], clustered_image[-1, -1]]
+        non_player_cluster = max(set(corner_clusters), key=corner_clusters.count)
         player_cluster = 1 - non_player_cluster
-
         player_color = kmeans.cluster_centers_[player_cluster]
-
         return player_color
 
 
@@ -56,18 +57,23 @@ class TeamAssigner:
         self.team_colors[2] = kmeans.cluster_centers_[1]
 
 
-    def get_player_team(self,frame,player_bbox,player_id):
+    def get_player_team(self, frame, player_bbox, player_id):
+        import numpy as np
         if player_id in self.player_team_dict:
             return self.player_team_dict[player_id]
 
-        player_color = self.get_player_color(frame,player_bbox)
+        player_color = self.get_player_color(frame, player_bbox)
+        # Ensure player_color is a numpy array for reshape
+        player_color_np = np.array(player_color)
+        if player_color_np.shape != (3,):
+            # If player_color is not valid, assign to a default team (e.g., 0)
+            team_id = 0
+        else:
+            team_id = self.kmeans.predict(player_color_np.reshape(1, -1))[0]
+            team_id += 1
 
-        team_id = self.kmeans.predict(player_color.reshape(1,-1))[0]
-        team_id+=1
-
-        if player_id ==91:
-            team_id=1
+        if player_id == 91:
+            team_id = 1
 
         self.player_team_dict[player_id] = team_id
-
         return team_id
